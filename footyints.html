@@ -1,0 +1,1860 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Footy Ints - Letterboxd Style</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #0a0a0f;
+            color: #e8e8e8;
+            min-height: 100vh;
+        }
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #1a1a2e;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #f5c842;
+            border-radius: 4px;
+        }
+
+        .navbar {
+            background: #12121f;
+            padding: 12px 20px;
+            border-bottom: 2px solid #f5c842;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        .navbar .logo {
+            font-size: 22px;
+            font-weight: 800;
+            color: #f5c842;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .navbar .logo span {
+            color: white;
+        }
+        .navbar .nav-links {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        .navbar .nav-links a {
+            color: #aaa;
+            text-decoration: none;
+            font-weight: 500;
+            transition: 0.2s;
+            cursor: pointer;
+            font-size: 13px;
+        }
+        .navbar .nav-links a:hover {
+            color: #f5c842;
+        }
+        .btn-gold {
+            background: #f5c842;
+            color: #12121f;
+            padding: 5px 14px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 700;
+            cursor: pointer;
+            font-size: 13px;
+        }
+        .btn-gold:hover {
+            background: #e0b032;
+        }
+        .btn-green {
+            background: #27ae60;
+            color: white;
+            padding: 5px 14px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 700;
+            cursor: pointer;
+            font-size: 13px;
+        }
+        .btn-green:hover {
+            background: #2ecc71;
+        }
+        .btn-purple {
+            background: #8e44ad;
+            color: white;
+            padding: 5px 14px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 700;
+            cursor: pointer;
+            font-size: 13px;
+        }
+        .btn-purple:hover {
+            background: #9b59b6;
+        }
+        .btn-red {
+            background: #c0392b;
+            color: white;
+            padding: 4px 12px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 12px;
+        }
+        .btn-red:hover {
+            background: #e74c3c;
+        }
+        .btn-outline {
+            background: transparent;
+            color: #f5c842;
+            border: 2px solid #f5c842;
+            padding: 4px 12px;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            font-size: 13px;
+        }
+        .btn-outline:hover {
+            background: #f5c84222;
+        }
+        .hidden {
+            display: none !important;
+        }
+
+        .admin-badge {
+            background: #8e44ad;
+            color: white;
+            font-size: 10px;
+            padding: 2px 10px;
+            border-radius: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+        .user-badge {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .user-badge .uname {
+            color: white;
+            font-weight: 500;
+            font-size: 13px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 16px;
+        }
+
+        .page-header {
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .page-header h1 {
+            font-size: 28px;
+            font-weight: 800;
+            color: #f5c842;
+        }
+        .page-header p {
+            color: #888;
+            font-size: 14px;
+        }
+        .header-actions {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .campaign-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 16px;
+        }
+        .campaign-card {
+            background: #16162a;
+            border-radius: 12px;
+            overflow: hidden;
+            cursor: pointer;
+            transition: 0.3s;
+            border: 1px solid #2a2a44;
+            position: relative;
+        }
+        .campaign-card:hover {
+            transform: translateY(-4px);
+            border-color: #f5c842;
+        }
+        .campaign-card .banner {
+            height: 90px;
+            background: linear-gradient(135deg, #1a1a3e, #2a1a3e);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 36px;
+        }
+        .campaign-card .info {
+            padding: 12px 14px;
+        }
+        .campaign-card .info h3 {
+            font-size: 15px;
+            color: white;
+        }
+        .campaign-card .info .meta {
+            font-size: 12px;
+            color: #888;
+        }
+        .campaign-card .info .winner {
+            font-size: 12px;
+            color: #f5c842;
+        }
+        .campaign-card .delete-btn {
+            position: absolute;
+            top: 6px;
+            right: 6px;
+            background: rgba(192, 57, 43, 0.8);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            font-size: 12px;
+            cursor: pointer;
+            opacity: 0;
+            transition: 0.2s;
+        }
+        .campaign-card:hover .delete-btn {
+            opacity: 1;
+        }
+        .campaign-card .delete-btn:hover {
+            background: #e74c3c;
+        }
+        .admin-lock {
+            position: absolute;
+            top: 6px;
+            right: 6px;
+            color: #555;
+            font-size: 14px;
+        }
+
+        .back-btn {
+            color: #f5c842;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 14px;
+        }
+        .back-btn:hover {
+            text-decoration: underline;
+        }
+
+        .campaign-detail-header {
+            background: #16162a;
+            border-radius: 12px;
+            padding: 16px 20px;
+            margin-bottom: 20px;
+            border: 1px solid #2a2a44;
+        }
+        .campaign-detail-header h1 {
+            font-size: 26px;
+            color: white;
+        }
+        .campaign-detail-header .sub {
+            color: #888;
+            font-size: 13px;
+        }
+        .campaign-detail-header .winner-badge {
+            display: inline-block;
+            background: #f5c84222;
+            color: #f5c842;
+            padding: 3px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            margin-top: 6px;
+            border: 1px solid #f5c84244;
+        }
+
+        .player-perf-card {
+            background: #16162a;
+            border-radius: 12px;
+            border: 1px solid #2a2a44;
+            margin-bottom: 16px;
+            overflow: hidden;
+        }
+        .player-perf-header {
+            padding: 12px 18px;
+            background: #1a1a30;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #2a2a44;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        .player-perf-header .pinfo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .player-perf-header .avatar {
+            width: 36px;
+            height: 36px;
+            background: linear-gradient(135deg, #2a2a5e, #1a1a3e);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            font-weight: 700;
+            color: #f5c842;
+            border: 2px solid #3a3a66;
+        }
+        .player-perf-header .pname {
+            font-weight: 600;
+            color: white;
+            font-size: 16px;
+        }
+        .player-perf-header .ppos {
+            font-size: 12px;
+            color: #888;
+        }
+        .player-perf-header .final-rating-display {
+            font-size: 22px;
+            font-weight: 800;
+            color: #f5c842;
+        }
+
+        .match-row {
+            padding: 8px 18px;
+            border-bottom: 1px solid #1a1a30;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        .match-row:last-child {
+            border-bottom: none;
+        }
+        .match-row .stage-name-display {
+            font-weight: 600;
+            color: #f5c842;
+            font-size: 14px;
+            min-width: 120px;
+        }
+        .match-row .opponent-display {
+            color: #888;
+            font-size: 13px;
+            min-width: 100px;
+        }
+        .match-row .rating-area {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+        .match-row .rating-area select {
+            background: #12122a;
+            color: white;
+            border: 1px solid #2a2a4a;
+            border-radius: 6px;
+            padding: 4px 8px;
+            font-size: 13px;
+        }
+        .match-row .rating-area select:focus {
+            outline: 2px solid #f5c842;
+        }
+        .match-row .rating-area .rate-btn {
+            background: #2a2a4a;
+            color: white;
+            border: none;
+            padding: 4px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 12px;
+            transition: 0.2s;
+        }
+        .match-row .rating-area .rate-btn:hover {
+            background: #3a3a6a;
+        }
+        .match-row .rating-area .rated-badge {
+            color: #27ae60;
+            font-size: 12px;
+        }
+        .match-row .rating-area .avg-display {
+            color: #f5c842;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .final-row {
+            padding: 12px 18px;
+            background: #1a1a30;
+            border-top: 2px solid #f5c84244;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .final-row .final-label {
+            font-weight: 600;
+            color: #f5c842;
+            font-size: 15px;
+        }
+        .final-row .final-status-text {
+            font-size: 13px;
+            color: #888;
+        }
+        .final-row .final-status-text.locked {
+            color: #27ae60;
+        }
+        .final-row .final-status-text.unlocked {
+            color: #e67e22;
+        }
+        .final-row .final-area {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        .final-row .final-area select {
+            background: #12122a;
+            color: white;
+            border: 1px solid #2a2a4a;
+            border-radius: 6px;
+            padding: 4px 8px;
+            font-size: 14px;
+        }
+        .final-row .final-area select:focus {
+            outline: 2px solid #f5c842;
+        }
+        .final-row .final-area .submit-final-btn {
+            background: #f5c842;
+            color: #12121f;
+            border: none;
+            padding: 4px 16px;
+            border-radius: 6px;
+            font-weight: 700;
+            cursor: pointer;
+            font-size: 13px;
+        }
+        .final-row .final-area .submit-final-btn:hover {
+            background: #e0b032;
+        }
+        .final-row .final-area .final-display {
+            font-size: 22px;
+            font-weight: 800;
+            color: #f5c842;
+        }
+
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(6px);
+            z-index: 200;
+            align-items: center;
+            justify-content: center;
+        }
+        .modal-overlay.active {
+            display: flex;
+        }
+        .modal {
+            background: #1a1a2e;
+            border-radius: 16px;
+            padding: 24px 28px;
+            max-width: 480px;
+            width: 92%;
+            max-height: 90vh;
+            overflow-y: auto;
+            border: 1px solid #3a3a5e;
+        }
+        .modal h2 {
+            color: white;
+            font-size: 20px;
+        }
+        .modal .sub {
+            color: #888;
+            font-size: 13px;
+            margin-bottom: 14px;
+        }
+        .modal label {
+            color: #ccc;
+            font-weight: 500;
+            display: block;
+            margin-top: 10px;
+            font-size: 13px;
+        }
+        .modal input,
+        .modal select {
+            width: 100%;
+            padding: 8px 12px;
+            background: #12122a;
+            border: 1px solid #2a2a4a;
+            border-radius: 8px;
+            color: white;
+            font-family: inherit;
+            margin-top: 3px;
+            font-size: 14px;
+        }
+        .modal input:focus,
+        .modal select:focus {
+            outline: 2px solid #f5c842;
+            border-color: transparent;
+        }
+        .modal .modal-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 16px;
+            justify-content: flex-end;
+        }
+        .modal .modal-actions .cancel {
+            background: transparent;
+            color: #888;
+            border: 1px solid #444;
+            padding: 8px 18px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 13px;
+        }
+        .modal .modal-actions .cancel:hover {
+            background: #222;
+        }
+        .modal .modal-actions .submit {
+            background: #f5c842;
+            color: #12121f;
+            border: none;
+            padding: 8px 22px;
+            border-radius: 8px;
+            font-weight: 700;
+            cursor: pointer;
+            font-size: 13px;
+        }
+        .modal .modal-actions .submit:hover {
+            background: #e0b032;
+        }
+
+        .auth-container {
+            max-width: 380px;
+            margin: 30px auto;
+            background: #16162a;
+            padding: 24px 28px;
+            border-radius: 16px;
+            border: 1px solid #2a2a44;
+        }
+        .auth-container h1 {
+            color: #f5c842;
+            font-size: 24px;
+            text-align: center;
+        }
+        .auth-container p {
+            color: #888;
+            text-align: center;
+            margin-bottom: 16px;
+            font-size: 14px;
+        }
+        .auth-container input {
+            width: 100%;
+            padding: 10px 14px;
+            background: #12122a;
+            border: 1px solid #2a2a4a;
+            border-radius: 8px;
+            color: white;
+            margin-bottom: 10px;
+            font-size: 14px;
+        }
+        .auth-container input:focus {
+            outline: 2px solid #f5c842;
+            border-color: transparent;
+        }
+        .auth-container .auth-btn {
+            width: 100%;
+            padding: 10px;
+            background: #f5c842;
+            color: #12121f;
+            border: none;
+            border-radius: 8px;
+            font-weight: 700;
+            font-size: 15px;
+            cursor: pointer;
+        }
+        .auth-container .auth-btn:hover {
+            background: #e0b032;
+        }
+        .auth-container .switch {
+            text-align: center;
+            margin-top: 12px;
+            color: #888;
+            font-size: 13px;
+        }
+        .auth-container .switch a {
+            color: #f5c842;
+            cursor: pointer;
+        }
+
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #1a1a2e;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 10px;
+            border: 1px solid #f5c842;
+            z-index: 999;
+            opacity: 0;
+            transition: 0.4s;
+            pointer-events: none;
+            font-size: 13px;
+            max-width: 90%;
+            text-align: center;
+        }
+        .toast.show {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .reset-btn {
+            background: #c0392b;
+            color: white;
+            border: none;
+            padding: 4px 12px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 11px;
+        }
+        .reset-btn:hover {
+            background: #e74c3c;
+        }
+
+        @media (max-width: 640px) {
+            .navbar {
+                padding: 8px 12px;
+            }
+            .navbar .logo {
+                font-size: 18px;
+            }
+            .page-header h1 {
+                font-size: 22px;
+            }
+            .campaign-grid {
+                grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+            }
+            .match-row {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            .match-row .stage-name-display,
+            .match-row .opponent-display {
+                min-width: auto;
+            }
+            .player-perf-header {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            .final-row {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            .modal {
+                padding: 16px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div id="toast" class="toast"></div>
+
+    <nav class="navbar">
+        <div class="logo" onclick="navigateTo('home')">⚽ <span>Footy</span>Ints</div>
+        <div class="nav-links">
+            <a onclick="navigateTo('home')">Home</a>
+            <div id="adminButtons" class="hidden">
+                <a onclick="openAddCampaign()" class="btn-green" style="display:inline-block;">+ Campaign</a>
+                <a onclick="openAddPlayer()" class="btn-purple" style="display:inline-block;">+ Player</a>
+                <a onclick="openAddStage()" class="btn-gold" style="display:inline-block;">+ Stage</a>
+            </div>
+            <div id="authButtons">
+                <a onclick="navigateTo('login')">Login</a>
+                <a onclick="navigateTo('register')"><button class="btn-gold">Sign Up</button></a>
+            </div>
+            <div id="userMenu" class="hidden user-badge">
+                <span class="uname" id="usernameDisplay"></span>
+                <span class="admin-badge hidden" id="adminBadge">Admin</span>
+                <button class="btn-outline" onclick="logoutUser()">Logout</button>
+            </div>
+            <button class="reset-btn" onclick="resetAll()">⚠️ Reset</button>
+        </div>
+    </nav>
+
+    <div class="container" id="app"></div>
+
+    <!-- Add Campaign Modal -->
+    <div class="modal-overlay" id="addCampaignModal">
+        <div class="modal">
+            <h2>➕ Add Campaign</h2>
+            <p class="sub">Add a new tournament or league</p>
+            <label>Title *</label>
+            <input type="text" id="newCampaignTitle" placeholder="UCL 2024/25">
+            <label>Slug *</label>
+            <input type="text" id="newCampaignSlug" placeholder="ucl-2024-25">
+            <label>Year *</label>
+            <input type="number" id="newCampaignYear" placeholder="2025">
+            <label>Tournament Type</label>
+            <select id="newCampaignType">
+                <option value="UCL">UCL</option>
+                <option value="World Cup">World Cup</option>
+                <option value="Euros">Euros</option>
+                <option value="League">League</option>
+                <option value="Copa America">Copa America</option>
+                <option value="AFCON">AFCON</option>
+                <option value="Other">Other</option>
+            </select>
+            <label>Winner</label>
+            <input type="text" id="newCampaignWinner" placeholder="Real Madrid">
+            <label>Emoji *</label>
+            <input type="text" id="newCampaignEmoji" placeholder="🏆" maxlength="2">
+            <div class="modal-actions">
+                <button class="cancel" onclick="closeAddCampaign()">Cancel</button>
+                <button class="submit" onclick="submitAddCampaign()">Add</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Player Modal -->
+    <div class="modal-overlay" id="addPlayerModal">
+        <div class="modal">
+            <h2>➕ Add Player</h2>
+            <p class="sub">Add a player to a campaign</p>
+            <label>Name *</label>
+            <input type="text" id="newPlayerName" placeholder="Lamine Yamal">
+            <label>Slug *</label>
+            <input type="text" id="newPlayerSlug" placeholder="yamal">
+            <label>Country</label>
+            <input type="text" id="newPlayerCountry" placeholder="Spain">
+            <label>Club</label>
+            <input type="text" id="newPlayerClub" placeholder="Barcelona">
+            <label>Position *</label>
+            <select id="newPlayerPos">
+                <option value="ST">ST</option>
+                <option value="LW">LW</option>
+                <option value="RW">RW</option>
+                <option value="CAM">CAM</option>
+                <option value="CDM">CDM</option>
+                <option value="CM">CM</option>
+                <option value="CB">CB</option>
+                <option value="LB">LB</option>
+                <option value="RB">RB</option>
+                <option value="GK">GK</option>
+            </select>
+            <label>Campaign *</label>
+            <select id="newPlayerCampaign"></select>
+            <div class="modal-actions">
+                <button class="cancel" onclick="closeAddPlayer()">Cancel</button>
+                <button class="submit" onclick="submitAddPlayer()">Add</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Stage Modal -->
+    <div class="modal-overlay" id="addStageModal">
+        <div class="modal">
+            <h2>➕ Add Stage</h2>
+            <p class="sub">Add a stage/matchday to a campaign</p>
+            <label>Campaign *</label>
+            <select id="newStageCampaign"></select>
+            <label>Stage Name *</label>
+            <input type="text" id="newStageName" placeholder="Group Stage, R16, QF, etc.">
+            <div class="modal-actions">
+                <button class="cancel" onclick="closeAddStage()">Cancel</button>
+                <button class="submit" onclick="submitAddStage()">Add</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Confirm Modal -->
+    <div class="modal-overlay" id="confirmModal">
+        <div class="modal">
+            <h2 id="confirmTitle">Confirm</h2>
+            <p class="sub" id="confirmMsg">Are you sure?</p>
+            <div class="modal-actions">
+                <button class="cancel" onclick="closeConfirm()">Cancel</button>
+                <button class="submit" id="confirmBtn" onclick="confirmAction()">Confirm</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+        // RESET FUNCTION
+        // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+        function resetAll() {
+            if (confirm('⚠️ Reset ALL data? This will clear everything!')) {
+                localStorage.clear();
+                location.reload();
+            }
+        }
+
+        // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+        // DATA LAYER
+        // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+        const DEFAULT_DATA = {
+            campaigns: [
+                { id: 1, slug: 'ucl-2024', title: 'UEFA Champions League 2023/24', year: 2024, tournament: 'UCL',
+                    winner: 'Real Madrid', emoji: '🏆' },
+                { id: 2, slug: 'worldcup-2022', title: 'FIFA World Cup 2022', year: 2022, tournament: 'World Cup',
+                    winner: 'Argentina', emoji: '🌍' },
+                { id: 3, slug: 'euro-2024', title: 'UEFA Euro 2024', year: 2024, tournament: 'Euros', winner: 'Spain',
+                    emoji: '🇪🇺' },
+                { id: 4, slug: 'pl-2024', title: 'Premier League 2023/24', year: 2024, tournament: 'League',
+                    winner: 'Manchester City', emoji: '🏴󠁧󠁢󠁥󠁮󠁧󠁿' }
+            ],
+            players: [
+                { id: 1, name: 'Vinicius Jr', slug: 'vinicius', country: 'Brazil', club: 'Real Madrid', pos: 'LW' },
+                { id: 2, name: 'Jude Bellingham', slug: 'bellingham', country: 'England', club: 'Real Madrid',
+                    pos: 'CAM' },
+                { id: 3, name: 'Erling Haaland', slug: 'haaland', country: 'Norway', club: 'Man City', pos: 'ST' },
+                { id: 4, name: 'Kylian Mbappe', slug: 'mbappe', country: 'France', club: 'PSG', pos: 'ST' },
+                { id: 5, name: 'Manuel Neuer', slug: 'neuer', country: 'Germany', club: 'Bayern', pos: 'GK' },
+                { id: 6, name: 'Lionel Messi', slug: 'messi', country: 'Argentina', club: 'Inter Miami', pos: 'RW' },
+                { id: 7, name: 'Emiliano Martinez', slug: 'emi', country: 'Argentina', club: 'Aston Villa', pos: 'GK' },
+                { id: 8, name: 'Julian Alvarez', slug: 'alvarez', country: 'Argentina', club: 'Man City', pos: 'ST' },
+                { id: 9, name: 'Lamine Yamal', slug: 'yamal', country: 'Spain', club: 'Barcelona', pos: 'RW' },
+                { id: 10, name: 'Nico Williams', slug: 'nwilliams', country: 'Spain', club: 'Athletic', pos: 'LW' },
+                { id: 11, name: 'Rodri', slug: 'rodri', country: 'Spain', club: 'Man City', pos: 'CDM' },
+                { id: 12, name: 'Phil Foden', slug: 'foden', country: 'England', club: 'Man City', pos: 'CAM' },
+                { id: 13, name: 'Cole Palmer', slug: 'palmer', country: 'England', club: 'Chelsea', pos: 'RW' },
+                { id: 14, name: 'Bukayo Saka', slug: 'saka', country: 'England', club: 'Arsenal', pos: 'RW' }
+            ],
+            performances: [
+                { campaign_id: 1, player_id: 1 }, { campaign_id: 1, player_id: 2 },
+                { campaign_id: 1, player_id: 3 }, { campaign_id: 1, player_id: 4 },
+                { campaign_id: 1, player_id: 5 }, { campaign_id: 2, player_id: 6 },
+                { campaign_id: 2, player_id: 4 }, { campaign_id: 2, player_id: 7 },
+                { campaign_id: 2, player_id: 8 }, { campaign_id: 3, player_id: 9 },
+                { campaign_id: 3, player_id: 10 }, { campaign_id: 3, player_id: 11 },
+                { campaign_id: 4, player_id: 12 }, { campaign_id: 4, player_id: 13 },
+                { campaign_id: 4, player_id: 14 }
+            ],
+            adminIds: []
+        };
+
+        function loadData() {
+            try {
+                const saved = localStorage.getItem('footy_data');
+                if (saved) {
+                    const parsed = JSON.parse(saved);
+                    if (parsed.campaigns && parsed.players && parsed.performances) {
+                        if (!parsed.adminIds) parsed.adminIds = [];
+                        return parsed;
+                    }
+                }
+            } catch (e) {
+                console.error('Error loading data:', e);
+            }
+            localStorage.setItem('footy_data', JSON.stringify(DEFAULT_DATA));
+            return JSON.parse(JSON.stringify(DEFAULT_DATA));
+        }
+
+        function saveData() {
+            try {
+                localStorage.setItem('footy_data', JSON.stringify(DATA));
+            } catch (e) {
+                console.error('Error saving data:', e);
+            }
+        }
+
+        let DATA = loadData();
+        let nextCampaignId = DATA.campaigns.reduce(function(max, c) { return Math.max(max, c.id); }, 0) + 1;
+        let nextPlayerId = DATA.players.reduce(function(max, p) { return Math.max(max, p.id); }, 0) + 1;
+        let nextStageId = Date.now();
+
+        function getStages() {
+            try {
+                return JSON.parse(localStorage.getItem('footy_stages') || '{}');
+            } catch (e) { return {}; }
+        }
+
+        function saveStages(stages) {
+            localStorage.setItem('footy_stages', JSON.stringify(stages));
+        }
+
+        function getMatchRatings() {
+            try {
+                return JSON.parse(localStorage.getItem('footy_match_ratings') || '{}');
+            } catch (e) { return {}; }
+        }
+
+        function saveMatchRatings(ratings) {
+            localStorage.setItem('footy_match_ratings', JSON.stringify(ratings));
+        }
+
+        function getFinalRatings() {
+            try {
+                return JSON.parse(localStorage.getItem('footy_final_ratings') || '{}');
+            } catch (e) { return {}; }
+        }
+
+        function saveFinalRatings(ratings) {
+            localStorage.setItem('footy_final_ratings', JSON.stringify(ratings));
+        }
+
+        function getUsers() {
+            try {
+                return JSON.parse(localStorage.getItem('footy_users') || '[]');
+            } catch (e) { return []; }
+        }
+
+        function saveUsers(users) {
+            localStorage.setItem('footy_users', JSON.stringify(users));
+        }
+
+        // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+        // STATE
+        // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+        var currentUser = null;
+        var currentPage = 'home';
+        var currentCampaignSlug = null;
+        var pendingConfirm = null;
+
+        // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+        // HELPERS
+        // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+        function toast(msg) {
+            var el = document.getElementById('toast');
+            el.textContent = msg;
+            el.classList.add('show');
+            clearTimeout(el._t);
+            el._t = setTimeout(function() { el.classList.remove('show'); }, 3000);
+        }
+
+        function isAdmin() {
+            if (!currentUser) return false;
+            if (!DATA.adminIds) return false;
+            return DATA.adminIds.indexOf(currentUser.id) !== -1;
+        }
+
+        function getCampaign(slug) {
+            for (var i = 0; i < DATA.campaigns.length; i++) {
+                if (DATA.campaigns[i].slug === slug) return DATA.campaigns[i];
+            }
+            return null;
+        }
+
+        function getPlayer(id) {
+            for (var i = 0; i < DATA.players.length; i++) {
+                if (DATA.players[i].id === id) return DATA.players[i];
+            }
+            return null;
+        }
+
+        function getPlayersForCampaign(campaignId) {
+            var pIds = [];
+            for (var i = 0; i < DATA.performances.length; i++) {
+                if (DATA.performances[i].campaign_id === campaignId) {
+                    pIds.push(DATA.performances[i].player_id);
+                }
+            }
+            var players = [];
+            for (var j = 0; j < pIds.length; j++) {
+                var p = getPlayer(pIds[j]);
+                if (p) players.push(p);
+            }
+            return players;
+        }
+
+        function getStagesForCampaign(campaignId) {
+            var all = getStages();
+            var stages = all[campaignId] || [];
+            stages.sort(function(a, b) { return a.order - b.order; });
+            return stages;
+        }
+
+        function getMatchRatingAvg(stageId, playerId) {
+            var all = getMatchRatings();
+            if (!all[stageId]) return null;
+            if (!all[stageId][playerId]) return null;
+            var vals = [];
+            for (var key in all[stageId][playerId]) {
+                vals.push(all[stageId][playerId][key].rating);
+            }
+            if (vals.length === 0) return null;
+            var sum = 0;
+            for (var i = 0; i < vals.length; i++) sum += vals[i];
+            return Math.round((sum / vals.length) * 10) / 10;
+        }
+
+        function getMatchRatingCount(stageId, playerId) {
+            var all = getMatchRatings();
+            if (!all[stageId]) return 0;
+            if (!all[stageId][playerId]) return 0;
+            var count = 0;
+            for (var key in all[stageId][playerId]) count++;
+            return count;
+        }
+
+        function getMatchRatingsList(stageId, playerId) {
+            var all = getMatchRatings();
+            if (!all[stageId]) return [];
+            if (!all[stageId][playerId]) return [];
+            var result = [];
+            for (var key in all[stageId][playerId]) {
+                var data = all[stageId][playerId][key];
+                result.push({ userId: key, rating: data.rating, opponent: data.opponent, timestamp: data.timestamp });
+            }
+            return result;
+        }
+
+        function getUserMatchRating(stageId, playerId, userId) {
+            var all = getMatchRatings();
+            if (!all[stageId]) return null;
+            if (!all[stageId][playerId]) return null;
+            return all[stageId][playerId][userId] || null;
+        }
+
+        function getFinalRatingAvg(campaignId, playerId) {
+            var all = getFinalRatings();
+            if (!all[campaignId]) return null;
+            if (!all[campaignId][playerId]) return null;
+            var vals = [];
+            for (var key in all[campaignId][playerId]) {
+                vals.push(all[campaignId][playerId][key].rating);
+            }
+            if (vals.length === 0) return null;
+            var sum = 0;
+            for (var i = 0; i < vals.length; i++) sum += vals[i];
+            return Math.round((sum / vals.length) * 10) / 10;
+        }
+
+        function getFinalRatingCount(campaignId, playerId) {
+            var all = getFinalRatings();
+            if (!all[campaignId]) return 0;
+            if (!all[campaignId][playerId]) return 0;
+            var count = 0;
+            for (var key in all[campaignId][playerId]) count++;
+            return count;
+        }
+
+        function getUserFinalRating(campaignId, playerId, userId) {
+            var all = getFinalRatings();
+            if (!all[campaignId]) return null;
+            if (!all[campaignId][playerId]) return null;
+            return all[campaignId][playerId][userId] || null;
+        }
+
+        function getFinalRatingsList(campaignId, playerId) {
+            var all = getFinalRatings();
+            if (!all[campaignId]) return [];
+            if (!all[campaignId][playerId]) return [];
+            var result = [];
+            for (var key in all[campaignId][playerId]) {
+                var data = all[campaignId][playerId][key];
+                result.push({ userId: key, rating: data.rating, timestamp: data.timestamp });
+            }
+            return result;
+        }
+
+        function hasUserRatedAllStages(campaignId, playerId, userId) {
+            var stages = getStagesForCampaign(campaignId);
+            for (var i = 0; i < stages.length; i++) {
+                var rating = getUserMatchRating(stages[i].id, playerId, userId);
+                if (rating === null) return false;
+            }
+            return true;
+        }
+
+        function getInitials(name) {
+            var parts = name.split(' ');
+            var initials = '';
+            for (var i = 0; i < parts.length && i < 2; i++) {
+                initials += parts[i][0];
+            }
+            return initials.toUpperCase();
+        }
+
+        function getUsername(userId) {
+            var users = getUsers();
+            for (var i = 0; i < users.length; i++) {
+                if (users[i].id === userId) return users[i].username;
+            }
+            return 'Anonymous';
+        }
+
+        function generateStageId() {
+            return ++nextStageId;
+        }
+
+        function navigateTo(page, data) {
+            currentPage = page;
+            if (page === 'campaign') {
+                currentCampaignSlug = data;
+            }
+            render();
+        }
+
+        // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+        // AUTH
+        // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+        function getCurrentUser() {
+            try {
+                var saved = localStorage.getItem('footy_current_user');
+                if (saved) {
+                    var parsed = JSON.parse(saved);
+                    if (parsed && parsed.id) {
+                        return parsed;
+                    }
+                }
+            } catch (e) {
+                console.error('Error loading current user:', e);
+            }
+            return null;
+        }
+
+        function setCurrentUser(user) {
+            currentUser = user;
+            if (user) {
+                localStorage.setItem('footy_current_user', JSON.stringify(user));
+            } else {
+                localStorage.removeItem('footy_current_user');
+            }
+            updateUI();
+        }
+
+        function updateUI() {
+            var authBtns = document.getElementById('authButtons');
+            var userMenu = document.getElementById('userMenu');
+            var uname = document.getElementById('usernameDisplay');
+            var adminBadge = document.getElementById('adminBadge');
+            var adminBtns = document.getElementById('adminButtons');
+
+            if (currentUser) {
+                authBtns.classList.add('hidden');
+                userMenu.classList.remove('hidden');
+                uname.textContent = currentUser.username;
+
+                if (isAdmin()) {
+                    adminBadge.classList.remove('hidden');
+                    adminBtns.classList.remove('hidden');
+                } else {
+                    adminBadge.classList.add('hidden');
+                    adminBtns.classList.add('hidden');
+                }
+            } else {
+                authBtns.classList.remove('hidden');
+                userMenu.classList.add('hidden');
+                adminBtns.classList.add('hidden');
+            }
+        }
+
+        function registerUser(username, email, password) {
+            try {
+                var users = getUsers();
+                for (var i = 0; i < users.length; i++) {
+                    if (users[i].username === username) {
+                        toast('Username taken');
+                        return false;
+                    }
+                }
+
+                var newUser = {
+                    id: Date.now(),
+                    username: username,
+                    email: email,
+                    password: password,
+                    joined: new Date().toISOString()
+                };
+
+                users.push(newUser);
+                saveUsers(users);
+
+                var adminCount = DATA.adminIds ? DATA.adminIds.length : 0;
+
+                if (adminCount < 3) {
+                    if (!DATA.adminIds) DATA.adminIds = [];
+                    DATA.adminIds.push(newUser.id);
+                    saveData();
+                    toast('🎉 You are ADMIN #' + (adminCount + 1) + '!');
+                } else {
+                    toast('✅ Account created! Login to start rating.');
+                }
+
+                currentUser = { id: newUser.id, username: newUser.username, email: newUser.email };
+                setCurrentUser(currentUser);
+                updateUI();
+                navigateTo('home');
+                return true;
+            } catch (e) {
+                console.error('Registration error:', e);
+                toast('Registration error: ' + e.message);
+                return false;
+            }
+        }
+
+        function loginUser(username, password) {
+            try {
+                var users = getUsers();
+                var found = null;
+                for (var i = 0; i < users.length; i++) {
+                    if (users[i].username === username && users[i].password === password) {
+                        found = users[i];
+                        break;
+                    }
+                }
+                if (!found) {
+                    toast('Invalid credentials');
+                    return false;
+                }
+                currentUser = { id: found.id, username: found.username, email: found.email };
+                setCurrentUser(currentUser);
+                updateUI();
+                toast('Welcome back, ' + found.username + '!');
+                navigateTo('home');
+                return true;
+            } catch (e) {
+                console.error('Login error:', e);
+                toast('Login error: ' + e.message);
+                return false;
+            }
+        }
+
+        function logoutUser() {
+            currentUser = null;
+            setCurrentUser(null);
+            updateUI();
+            toast('Logged out');
+            navigateTo('home');
+        }
+
+        // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+        // CAMPAIGN MANAGEMENT
+        // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+        function openAddCampaign() {
+            if (!currentUser || !isAdmin()) {
+                toast('Admin only');
+                return;
+            }
+            document.getElementById('addCampaignModal').classList.add('active');
+            document.getElementById('newCampaignTitle').value = '';
+            document.getElementById('newCampaignSlug').value = '';
+            document.getElementById('newCampaignYear').value = new Date().getFullYear();
+            document.getElementById('newCampaignWinner').value = '';
+            document.getElementById('newCampaignEmoji').value = '🏆';
+        }
+
+        function closeAddCampaign() {
+            document.getElementById('addCampaignModal').classList.remove('active');
+        }
+
+        function submitAddCampaign() {
+            var title = document.getElementById('newCampaignTitle').value.trim();
+            var slug = document.getElementById('newCampaignSlug').value.trim().toLowerCase().replace(/\s+/g, '-');
+            var year = parseInt(document.getElementById('newCampaignYear').value);
+            var tournament = document.getElementById('newCampaignType').value;
+            var winner = document.getElementById('newCampaignWinner').value.trim();
+            var emoji = document.getElementById('newCampaignEmoji').value.trim();
+
+            if (!title || !slug || !year || !emoji) {
+                toast('Fill all required fields');
+                return;
+            }
+            for (var i = 0; i < DATA.campaigns.length; i++) {
+                if (DATA.campaigns[i].slug === slug) {
+                    toast('Slug exists');
+                    return;
+                }
+            }
+
+            DATA.campaigns.push({
+                id: nextCampaignId++,
+                title: title,
+                slug: slug,
+                year: year,
+                tournament: tournament,
+                winner: winner || 'TBD',
+                emoji: emoji
+            });
+            saveData();
+            closeAddCampaign();
+            toast('✅ "' + title + '" added!');
+            render();
+        }
+
+        function deleteCampaign(id, title) {
+            if (!currentUser || !isAdmin()) {
+                toast('Admin only');
+                return;
+            }
+            showConfirm('Delete "' + title + '"?', 'This will remove everything.', function() {
+                var newCampaigns = [];
+                for (var i = 0; i < DATA.campaigns.length; i++) {
+                    if (DATA.campaigns[i].id !== id) newCampaigns.push(DATA.campaigns[i]);
+                }
+                DATA.campaigns = newCampaigns;
+
+                var newPerformances = [];
+                for (var j = 0; j < DATA.performances.length; j++) {
+                    if (DATA.performances[j].campaign_id !== id) newPerformances.push(DATA.performances[j]);
+                }
+                DATA.performances = newPerformances;
+
+                var stages = getStages();
+                delete stages[id];
+                saveStages(stages);
+                saveData();
+                toast('🗑️ "' + title + '" deleted');
+                render();
+            });
+        }
+
+        // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+        // PLAYER MANAGEMENT
+        // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+        function openAddPlayer() {
+            if (!currentUser || !isAdmin()) {
+                toast('Admin only');
+                return;
+            }
+            document.getElementById('addPlayerModal').classList.add('active');
+            document.getElementById('newPlayerName').value = '';
+            document.getElementById('newPlayerSlug').value = '';
+            document.getElementById('newPlayerCountry').value = '';
+            document.getElementById('newPlayerClub').value = '';
+
+            var select = document.getElementById('newPlayerCampaign');
+            select.innerHTML = '';
+            for (var i = 0; i < DATA.campaigns.length; i++) {
+                var c = DATA.campaigns[i];
+                var option = document.createElement('option');
+                option.value = c.id;
+                option.textContent = c.emoji + ' ' + c.title;
+                select.appendChild(option);
+            }
+        }
+
+        function closeAddPlayer() {
+            document.getElementById('addPlayerModal').classList.remove('active');
+        }
+
+        function submitAddPlayer() {
+            var name = document.getElementById('newPlayerName').value.trim();
+            var slug = document.getElementById('newPlayerSlug').value.trim().toLowerCase().replace(/\s+/g, '-');
+            var country = document.getElementById('newPlayerCountry').value.trim();
+            var club = document.getElementById('newPlayerClub').value.trim();
+            var pos = document.getElementById('newPlayerPos').value;
+            var campaignId = parseInt(document.getElementById('newPlayerCampaign').value);
+
+            if (!name || !slug || !campaignId) {
+                toast('Fill all required fields');
+                return;
+            }
+            for (var i = 0; i < DATA.players.length; i++) {
+                if (DATA.players[i].slug === slug) {
+                    toast('Player slug exists');
+                    return;
+                }
+            }
+
+            var newPlayer = {
+                id: nextPlayerId++,
+                name: name,
+                slug: slug,
+                country: country || 'Unknown',
+                club: club || 'Unknown',
+                pos: pos
+            };
+            DATA.players.push(newPlayer);
+            DATA.performances.push({ campaign_id: campaignId, player_id: newPlayer.id });
+            saveData();
+            closeAddPlayer();
+            toast('✅ "' + name + '" added to campaign!');
+            render();
+        }
+
+        // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+        // STAGE MANAGEMENT
+        // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+        function openAddStage() {
+            if (!currentUser || !isAdmin()) {
+                toast('Admin only');
+                return;
+            }
+            document.getElementById('addStageModal').classList.add('active');
+            document.getElementById('newStageName').value = '';
+
+            var select = document.getElementById('newStageCampaign');
+            select.innerHTML = '';
+            for (var i = 0; i < DATA.campaigns.length; i++) {
+                var c = DATA.campaigns[i];
+                var option = document.createElement('option');
+                option.value = c.id;
+                option.textContent = c.emoji + ' ' + c.title;
+                select.appendChild(option);
+            }
+        }
+
+        function closeAddStage() {
+            document.getElementById('addStageModal').classList.remove('active');
+        }
+
+        function submitAddStage() {
+            var campaignId = parseInt(document.getElementById('newStageCampaign').value);
+            var name = document.getElementById('newStageName').value.trim();
+
+            if (!campaignId || !name) {
+                toast('Fill all fields');
+                return;
+            }
+
+            var stages = getStages();
+            if (!stages[campaignId]) stages[campaignId] = [];
+
+            var newStage = {
+                id: generateStageId(),
+                name: name,
+                order: stages[campaignId].length + 1
+            };
+
+            stages[campaignId].push(newStage);
+            saveStages(stages);
+            closeAddStage();
+            toast('✅ "' + name + '" added!');
+            render();
+        }
+
+        // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+        // RATING FUNCTIONS
+        // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+        function rateMatch(stageId, playerId, rating, opponent) {
+            if (!currentUser) {
+                toast('Please login to rate');
+                return;
+            }
+            if (!rating || rating < 1 || rating > 10) {
+                toast('Please select a rating (1-10)');
+                return;
+            }
+
+            var ratings = getMatchRatings();
+            if (!ratings[stageId]) ratings[stageId] = {};
+            if (!ratings[stageId][playerId]) ratings[stageId][playerId] = {};
+
+            ratings[stageId][playerId][currentUser.id] = {
+                rating: rating,
+                opponent: opponent || '',
+                timestamp: new Date().toISOString()
+            };
+
+            saveMatchRatings(ratings);
+            toast('⭐ Match rating saved!');
+            render();
+        }
+
+        function submitFinalRating(campaignId, playerId, rating) {
+            if (!currentUser) {
+                toast('Please login to rate');
+                return;
+            }
+
+            var stages = getStagesForCampaign(campaignId);
+            if (stages.length === 0) {
+                toast('⚠️ No stages to rate!');
+                return;
+            }
+
+            if (!hasUserRatedAllStages(campaignId, playerId, currentUser.id)) {
+                toast('⚠️ You must rate all stages first!');
+                return;
+            }
+
+            var finals = getFinalRatings();
+            if (!finals[campaignId]) finals[campaignId] = {};
+            if (!finals[campaignId][playerId]) finals[campaignId][playerId] = {};
+
+            finals[campaignId][playerId][currentUser.id] = {
+                rating: rating,
+                timestamp: new Date().toISOString()
+            };
+
+            saveFinalRatings(finals);
+            toast('⭐ Final rating submitted: ' + rating);
+            render();
+        }
+
+        // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+        // CONFIRM MODAL
+        // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+        function showConfirm(title, msg, callback) {
+            document.getElementById('confirmTitle').textContent = title;
+            document.getElementById('confirmMsg').textContent = msg || 'Are you sure?';
+            pendingConfirm = callback;
+            document.getElementById('confirmModal').classList.add('active');
+        }
+
+        function closeConfirm() {
+            document.getElementById('confirmModal').classList.remove('active');
+            pendingConfirm = null;
+        }
+
+        function confirmAction() {
+            if (pendingConfirm) {
+                pendingConfirm();
+                pendingConfirm = null;
+            }
+            closeConfirm();
+        }
+
+        // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+        // RENDER
+        // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+        function render() {
+            var app = document.getElementById('app');
+            if (currentPage === 'home') renderHome(app);
+            else if (currentPage === 'campaign') renderCampaign(app);
+            else if (currentPage === 'login') renderLogin(app);
+            else if (currentPage === 'register') renderRegister(app);
+            else renderHome(app);
+        }
+
+        function renderHome(el) {
+            var admin = isAdmin();
+            var html = '';
+            html += '<div class="page-header">';
+            html += '<div>';
+            html += '<h1>🏆 Campaigns</h1>';
+            html += '<p>Rate player performances across every match and stage</p>';
+            if (admin) html += '<p style="color:#8e44ad;font-size:13px;">🔑 Admin — You can add/delete campaigns, players, stages</p>';
+            if (currentUser && !admin) html += '<p style="color:#27ae60;font-size:13px;">👤 You can rate players</p>';
+            if (!currentUser) html += '<p style="color:#666;font-size:13px;">Login to rate players</p>';
+            html += '<p style="color:#555;font-size:12px;">👑 First 3 users become admins</p>';
+            html += '</div>';
+            html += '<div class="header-actions">';
+            if (admin) html += '<button class="btn-green" onclick="openAddCampaign()">+ Campaign</button>';
+            if (admin) html += '<button class="btn-purple" onclick="openAddPlayer()">+ Player</button>';
+            if (admin) html += '<button class="btn-gold" onclick="openAddStage()">+ Stage</button>';
+            html += '</div>';
+            html += '</div>';
+
+            html += '<div class="campaign-grid">';
+            for (var i = 0; i < DATA.campaigns.length; i++) {
+                var c = DATA.campaigns[i];
+                html += '<div class="campaign-card" onclick="navigateTo(\'campaign\', \'' + c.slug + '\')">';
+                if (admin) {
+                    html += '<button class="delete-btn" onclick="event.stopPropagation(); deleteCampaign(' + c.id + ', \'' + c.title + '\')">✕</button>';
+                } else {
+                    html += '<div class="admin-lock">🔒</div>';
+                }
+                html += '<div class="banner">' + c.emoji + '</div>';
+                html += '<div class="info">';
+                html += '<h3>' + c.title + '</h3>';
+                html += '<div class="meta">' + c.tournament + ' • ' + c.year + '</div>';
+                html += '<div class="winner">🏆 Winner: ' + c.winner + '</div>';
+                html += '</div>';
+                html += '</div>';
+            }
+            html += '</div>';
+
+            if (DATA.campaigns.length === 0) {
+                html += '<p style="color:#666;text-align:center;padding:40px;">No campaigns. ' + (admin ? 'Add one!' : 'Wait for admin.') + '</p>';
+            }
+            el.innerHTML = html;
+        }
+
+        function renderCampaign(el) {
+            var campaign = getCampaign(currentCampaignSlug);
+            if (!campaign) {
+                el.innerHTML = '<p>Campaign not found. <a onclick="navigateTo(\'home\')" style="color:#f5c842;cursor:pointer;">Go back</a></p>';
+                return;
+            }
+
+            var stages = getStagesForCampaign(campaign.id);
+            var players = getPlayersForCampaign(campaign.id);
+            var admin = isAdmin();
+
+            var html = '';
+            html += '<div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;margin-bottom:14px;">';
+            html += '<a class="back-btn" onclick="navigateTo(\'home\')">← Back</a>';
+            if (admin) html += '<button class="btn-purple" onclick="openAddPlayer()">+ Player</button>';
+            if (admin) html += '<button class="btn-gold" onclick="openAddStage()">+ Stage</button>';
+            if (!admin) html += '<span style="color:#555;font-size:13px;">🔒 Admin manages players & stages</span>';
+            html += '</div>';
+
+            html += '<div class="campaign-detail-header">';
+            html += '<h1>' + campaign.emoji + ' ' + campaign.title + '</h1>';
+            html += '<div class="sub">' + campaign.tournament + ' • ' + campaign.year + '</div>';
+            html += '<div class="winner-badge">🏆 Winner: ' + campaign.winner + '</div>';
+            html += '<div style="margin-top:8px;color:#888;font-size:13px;">';
+            html += stages.length + ' stages • ' + players.length + ' players';
+            if (!currentUser) html += ' • <span style="color:#555;">Login to rate</span>';
+            html += '</div>';
+            html += '</div>';
+
+            if (players.length === 0) {
+                html += '<p style="color:#666;">No players. ' + (admin ? 'Admin can add players.' : 'Wait for admin to add players.') + '</p>';
+                el.innerHTML = html;
+                return;
+            }
+
+            for (var p = 0; p < players.length; p++) {
+                var player = players[p];
+                var avgFinalRating = getFinalRatingAvg(campaign.id, player.id);
+                var finalCount = getFinalRatingCount(campaign.id, player.id);
+
+                html += '<div class="player-perf-card">';
+                html += '<div class="player-perf-header">';
+                html += '<div class="pinfo">';
+                html += '<div class="avatar">' + getInitials(player.name) + '</div>';
+                html += '<div>';
+                html += '<div class="pname">' + player.name + '</div>';
+                html += '<div class="ppos">' + player.pos + ' • ' + player.club + '</div>';
+                html += '</div>';
+                html += '</div>';
+                html += '<div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">';
+                if (avgFinalRating !== null) {
+                    html += '<span class="final-rating-display">⭐ ' + avgFinalRating + '</span>';
+                } else {
+                    html += '<span style="color:#555;">No final ratings</span>';
+                }
+                html += '<span style="font-size:12px;color:#888;">(' + finalCount + ')</span>';
+                html += '</div>';
+                html += '</div>';
+
+                if (stages.length === 0) {
+                    html += '<div style="padding:12px 18px;color:#666;text-align:center;">';
+                    html += 'No stages. ' + (admin ? 'Admin can add stages.' : 'Wait for admin to add stages.');
+                    html += '</div>';
+                } else {
+                    for (var s = 0; s < stages.length; s++) {
+                        var stage = stages[s];
+                        var avgRating = getMatchRatingAvg(stage.id, player.id);
+                        var count = getMatchRatingCount(stage.id, player.id);
+                        var userRating = currentUser ? getUserMatchRating(stage.id, player.id, currentUser.id) : null;
+                        var allRatings = getMatchRatingsList(stage.id, player.id);
+
+                        html += '<div class="match-row">';
+                        html += '<span class="stage-name-display">' + (stage.name || 'Unnamed Stage') + '</span>';
+                        html += '<span class="opponent-display">' + (userRating ? 'vs ' + (userRating.opponent || 'TBD') : 'vs TBD') + '</span>';
+                        html += '<div class="rating-area">';
+                        if (avgRating !== null) html += '<span class="avg-display">⭐ ' + avgRating + '</span>';
+                        html += '<span style="font-size:11px;color:#555;">(' + count + ' ratings)</span>';
+
+                        if (currentUser) {
+                            html += '<select id="rate_' + stage.id + '_' + player.id + '">';
+                            html += '<option value="">Rate</option>';
+                            for (var n = 1; n <= 10; n++) {
+                                html += '<option value="' + n + '"';
+                                if (userRating && userRating.rating === n) html += ' selected';
+                                html += '>' + n + '</option>';
+                            }
+                            html += '</select>';
+                            html += '<input class="opponent-input" id="opp_' + stage.id + '_' + player.id + '" placeholder="vs Team" value="' + (userRating ? userRating.opponent || '' : '') + '" style="background:#12122a;border:1px solid #2a2a4a;border-radius:6px;padding:4px 8px;color:white;font-size:12px;width:100px;">';
+                            html += '<button class="rate-btn" onclick="rateMatch(' + stage.id + ', ' + player.id + ', parseInt(document.getElementById(\'rate_' + stage.id + '_' + player.id + '\').value), document.getElementById(\'opp_' + stage.id + '_' + player.id + '\').value)">Save</button>';
+                            if (userRating) html += '<span class="rated-badge">✅</span>';
+                        } else {
+                            html += '<span style="color:#555;font-size:12px;">Login to rate</span>';
+                        }
+                        html += '</div>';
+                        html += '</div>';
+
+                        if (allRatings.length > 0) {
+                            html += '<div style="padding:4px 18px 8px 18px;background:#0a0a1a;display:flex;flex-wrap:wrap;gap:6px;">';
+                            for (var r = 0; r < allRatings.length; r++) {
+                                var ratingData = allRatings[r];
+                                html += '<span style="font-size:11px;color:#888;background:#12122a;padding:2px 8px;border-radius:4px;border:1px solid #2a2a44;">';
+                                html += getUsername(ratingData.userId) + ': ⭐ ' + ratingData.rating;
+                                if (ratingData.opponent) html += ' vs ' + ratingData.opponent;
+                                html += '</span>';
+                            }
+                            html += '</div>';
+                        }
+                    }
+                }
+
+                var userRatedAll = currentUser ? hasUserRatedAllStages(campaign.id, player.id, currentUser.id) : false;
+                var userFinalRating = currentUser ? getUserFinalRating(campaign.id, player.id, currentUser.id) : null;
+                var allFinalRatings = getFinalRatingsList(campaign.id, player.id);
+
+                html += '<div class="final-row">';
+                html += '<div>';
+                html += '<span class="final-label">⭐ Final Rating</span>';
+                html += '<span class="final-status-text ' + (userRatedAll ? 'locked' : 'unlocked') + '">';
+                html += userRatedAll ? '✅ All stages rated' : '⚠️ Rate all ' + stages.length + ' stages first';
+                html += '</span>';
+                if (userFinalRating) {
+                    html += ' — You rated: <strong style="color:#f5c842;">' + userFinalRating.rating + '</strong>';
+                }
+                html += '</div>';
+                html += '<div class="final-area">';
+
+                if (currentUser) {
+                    if (userRatedAll) {
+                        if (!userFinalRating) {
+                            html += '<select id="final_' + player.id + '">';
+                            for (var fn = 1; fn <= 10; fn++) {
+                                html += '<option value="' + fn + '">' + fn + '</option>';
+                            }
+                            html += '</select>';
+                            html += '<button class="submit-final-btn" onclick="submitFinalRating(' + campaign.id + ', ' + player.id + ', parseInt(document.getElementById(\'final_' + player.id + '\').value))">Submit Final</button>';
+                        } else {
+                            html += '<span style="color:#27ae60;font-size:13px;">✅ Final submitted</span>';
+                        }
+                    } else {
+                        html += '<span style="color:#555;font-size:13px;">🔒 Rate all ' + stages.length + ' stages first</span>';
+                    }
+                } else {
+                    html += '<span style="color:#555;font-size:13px;">Login to submit final rating</span>';
+                }
+
+                if (avgFinalRating !== null) {
+                    html += '<span class="final-display">⭐ ' + avgFinalRating + '</span>';
+                }
+                html += '</div>';
+                html += '</div>';
+
+                if (allFinalRatings.length > 0) {
+                    html += '<div style="padding:4px 18px 12px 18px;background:#0a0a1a;display:flex;flex-wrap:wrap;gap:6px;border-top:1px solid #2a2a44;">';
+                    html += '<span style="font-size:11px;color:#555;margin-right:6px;">Final ratings:</span>';
+                    for (var fr = 0; fr < allFinalRatings.length; fr++) {
+                        var frData = allFinalRatings[fr];
+                        html += '<span style="font-size:11px;color:#f5c842;background:#12122a;padding:2px 8px;border-radius:4px;border:1px solid #f5c84244;">';
+                        html += getUsername(frData.userId) + ': ⭐ ' + frData.rating;
+                        html += '</span>';
+                    }
+                    html += '</div>';
+                }
+
+                html += '</div>';
+            }
+
+            el.innerHTML = html;
+        }
+
+        function renderLogin(el) {
+            el.innerHTML = '<div class="auth-container">';
+            el.innerHTML += '<h1>⚽ Welcome Back</h1>';
+            el.innerHTML += '<p>Sign in to rate players</p>';
+            el.innerHTML += '<input type="text" id="loginUsername" placeholder="Username" />';
+            el.innerHTML += '<input type="password" id="loginPassword" placeholder="Password" />';
+            el.innerHTML += '<button class="auth-btn" onclick="handleLogin()">Login</button>';
+            el.innerHTML += '<div class="switch">Don\'t have an account? <a onclick="navigateTo(\'register\')">Sign up</a></div>';
+            el.innerHTML += '</div>';
+        }
+
+        function handleLogin() {
+            var username = document.getElementById('loginUsername').value.trim();
+            var password = document.getElementById('loginPassword').value.trim();
+            if (!username || !password) {
+                toast('Please fill in all fields');
+                return;
+            }
+            loginUser(username, password);
+        }
+
+        function renderRegister(el) {
+            var adminCount = DATA.adminIds ? DATA.adminIds.length : 0;
+            var slotsLeft = 3 - adminCount;
+            el.innerHTML = '<div class="auth-container">';
+            el.innerHTML += '<h1>⚽ Join Footy Ints</h1>';
+            if (slotsLeft > 0) {
+                el.innerHTML += '<p>🎉 ' + slotsLeft + ' admin spots left! Be one of the first 3 users!</p>';
+            } else {
+                el.innerHTML += '<p>Create an account to rate players</p>';
+            }
+            el.innerHTML += '<input type="text" id="regUsername" placeholder="Username" />';
+            el.innerHTML += '<input type="email" id="regEmail" placeholder="Email" />';
+            el.innerHTML += '<input type="password" id="regPassword" placeholder="Password (min 6 chars)" />';
+            el.innerHTML += '<button class="auth-btn" onclick="handleRegister()">Create Account</button>';
+            el.innerHTML += '<div class="switch">Already have an account? <a onclick="navigateTo(\'login\')">Login</a></div>';
+            el.innerHTML += '</div>';
+        }
+
+        function handleRegister() {
+            var username = document.getElementById('regUsername').value.trim();
+            var email = document.getElementById('regEmail').value.trim();
+            var password = document.getElementById('regPassword').value.trim();
+
+            if (!username || !email || !password) {
+                toast('Please fill in all fields');
+                return;
+            }
+            if (password.length < 6) {
+                toast('Password must be at least 6 characters');
+                return;
+            }
+            registerUser(username, email, password);
+        }
+
+        // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+        // INIT
+        // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+        currentUser = getCurrentUser();
+        updateUI();
+        render();
+
+        // Close modals on overlay click
+        var overlays = document.querySelectorAll('.modal-overlay');
+        for (var i = 0; i < overlays.length; i++) {
+            overlays[i].addEventListener('click', function(e) {
+                if (e.target === this) {
+                    this.classList.remove('active');
+                }
+            });
+        }
+
+        // Enter key for login/register
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter') {
+                if (currentPage === 'login') handleLogin();
+                else if (currentPage === 'register') handleRegister();
+            }
+            if (e.key === 'Escape') {
+                var activeModals = document.querySelectorAll('.modal-overlay.active');
+                for (var i = 0; i < activeModals.length; i++) {
+                    activeModals[i].classList.remove('active');
+                }
+            }
+        });
+
+        console.log('⚽ Footy Ints - Letterboxd Edition loaded!');
+        console.log('📊 Data:', DATA);
+        console.log('👤 User:', currentUser);
+        console.log('👑 Admins:', DATA.adminIds);
+        console.log('📋 Users:', getUsers());
+        console.log('💡 If signup doesn\'t work, click the ⚠️ Reset button to clear everything and try again.');
+    </script>
+</body>
+</html>
